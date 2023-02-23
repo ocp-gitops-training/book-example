@@ -1,0 +1,31 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: git-ops-training-pipeline
+spec:
+  pipelineRef:
+    name: build-and-push-image
+  params:
+    - name: git-url
+      value: https://github.com/ocp-gitops-training/book-example.git
+    - name: git-revision
+      value: main
+    - name: context-dir
+      value: code
+    - name: image-name
+      value: quay.io/donkikoi/person-service
+    - name: registry-username
+      value: max_mustermann
+    - name: registry-password
+      value: abc123
+    - name: target-namespace
+      value: testspace
+  workspaces:
+    - name: shared-workspace
+      persistentVolumeClaim:
+        claimName: builder-pvc
+    - name: maven-settings
+      configMap:
+        name: maven-settings
+  serviceAccountName: pipeline
